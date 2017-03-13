@@ -1,6 +1,10 @@
 # Test problem 1
-#Burger's Equation
-#Parameters
+# Burger's Equation
+# u_t+(u²/2)_x=K(u)_xx
+# Initial Condition:
+# uo =   (1-x²)²   if -1<x<1
+#         0         otherwise
+# Parameters:
 const μ = 0.01
 const CFL = 0.9
 const Tend = 0.5
@@ -73,12 +77,16 @@ end
 #Compute order
 order = log2(errors[:,1:4]./errors[:,2:5])
 
-#
+## Display Errors and Order:
 # using DataFrames
 # df = DataFrame(errors);
 # names!(df, map(Symbol,steps));
 # df[:method] = ["MS","ESC","ESNC","ESC2","ESNC2"];
+# dfo = DataFrame(order);
+# names!(dfo, map(Symbol,steps[2:5]));
+# dfo[:method] = ["MS","ESC","ESNC","ESC2","ESNC2"];
 # println(df)
+# println(dfo)
 
 N=400
 dx, dt, ntime, xx, uinit = setup_initial(N)
