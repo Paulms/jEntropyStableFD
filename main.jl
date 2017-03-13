@@ -21,7 +21,7 @@ end
 
 #Setup initial Conditions
 function setup_initial(N)
-  dx = 4.0/(N+1)
+  dx = 4.0/(N-1)
   dt = CFL/(1.0*(1/dx+4*μ/dx^2))
   ntime = Int(floor(Tend/dt))
   xx = [i*dx-dx-2 for i in 1:N]
@@ -36,10 +36,10 @@ end
 
 include("numeric_schemes.jl")
 #Save reference data
-#N = M
-#dx, dt, ntime, xx, uinit = setup_initial(N)
-#uu3 = Entropy_conservative(uinit,dx,dt,N,ntime)
-#writedlm("burger_1_reference.txt", [xx uu3], '\t')
+# N = M
+# dx, dt, ntime, xx, uinit = setup_initial(N)
+# uu3 = Entropy_conservative(uinit,dx,dt,N,ntime)
+# writedlm("burger_1_reference.txt", [xx uu3], '\t')
 
 reference = readdlm("burger_1_reference.txt")
 steps = [200,400,800,1600,3200]
