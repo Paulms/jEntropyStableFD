@@ -83,8 +83,8 @@ function estimate_error(reference, xx, uu, dx, N)
   dxr = reference[2,1] - reference[1,1]
   uexact = zeros(N)
   for i = 1:N
-    j = Int(round((xx[i] - reference[1,1])/dxr))+1
-    uexact[i] = reference[j,2]
+    j = Int(floor((xx[i] - reference[1,1])/dxr))+1
+    uexact[i] = reference[j,2] + (xx[i] - reference[j,1])*(reference[j+1,2]-reference[j,2])/dxr
   end
   sum(dx*abs(uu - uexact))
 end
