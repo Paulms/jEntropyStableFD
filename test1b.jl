@@ -15,6 +15,8 @@ const M = 16000       #Cells in reference solution
 K(u) = μ*u^2
 Flux(u) = u^2/2
 FluxN(ul, ur) = (ur^2 + ul*ur + ul^2)/6.0
+cdt(u, CFL, dx) = CFL/(1/dx*maximum(abs(u))+1/dx^2*2*maximum(abs(2*μ*u)))
+
 function kvisc(ul, ur)
   if (abs(ul)< eps() && abs(ur) <eps())
     0.0
@@ -26,8 +28,6 @@ end
 #Setup initial Conditions
 function setup_initial(N)
   dx = 4.0/(N-1)
-  dt = CFL/(1.0*(1/dx+4*μ/dx^2))
-  ntime = Int(floor(Tend/dt))
   xx = [i*dx-dx-2 for i in 1:N]
   uinit = zeros(N)
   for (i,x) in enumerate(xx)
@@ -35,15 +35,15 @@ function setup_initial(N)
       uinit[i] = 1.0
     end
   end
-  return dx, dt, ntime, xx, uinit
+  return dx,xx, uinit
 end
 
 include("numeric_schemes.jl")
-#Save reference data
-N = M
-dx, dt, ntime, xx, uinit = setup_initial(N)
-uu3 = Entropy_conservative(uinit,dx,dt,N,ntime)
-writedlm("burger_2_reference.txt", [xx uu3], '\t')
+## Save reference data
+# N = M
+# dx, xx, uinit = setup_initial(N)
+# uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend)
+# writedlm("burger_2_reference.txt", [xx uu3], '\t')
 
 reference = readdlm("burger_2_reference.txt")
 steps = [200,400,800,1600,3200]
@@ -51,24 +51,24 @@ errors = zeros(5,5)
 for (i,step) in enumerate(steps)
   println("Testing with ", step, " steps")
   N = step
-  dx, dt, ntime, xx, uinit = setup_initial(N)
-  uu = Engquist_Osher(uinit,dx,dt,N,ntime)  #MS
+  dx, xx, uinit = setup_initial(N)
+  uu = Engquist_Osher(uinit,dx,CFL,N,Tend)  #MS
   error = estimate_error(reference[:,2], M, uu, N)
   println("Error: ", error)
   errors[1,i] = error
-  uu2 = Entropy_conservative(uinit,dx,dt,N,ntime) #ESC
+  uu2 = Entropy_conservative(uinit,dx,CFL,N,Tend) #ESC
   error = estimate_error(reference[:,2], M, uu2, N)
   println("Error: ", error)
   errors[2,i] = error
-  uu3 = Entropy_nonconservative(uinit,dx,dt,N,ntime) #ESNC
+  uu3 = Entropy_nonconservative(uinit,dx,CFL,N,Tend) #ESNC
   error = estimate_error(reference[:,2], M, uu3, N)
   println("Error: ", error)
   errors[3,i] = error
-  uu4 = Entropy_conservative(uinit,dx,dt,N,ntime, TVD_RK2) #ESC2
+  uu4 = Entropy_conservative(uinit,dx,CFL,N,Tend, TVD_RK2) #ESC2
   error = estimate_error(reference[:,2], M, uu4, N)
   println("Error: ", error)
   errors[4,i] = error
-  uu5 = Entropy_nonconservative(uinit,dx,dt,N,ntime, TVD_RK2) #ESNC2
+  uu5 = Entropy_nonconservative(uinit,dx,CFL,N,Tend, TVD_RK2) #ESNC2
   error = estimate_error(reference[:,2], M, uu5, N)
   println("Error: ", error)
   errors[5,i] = error
@@ -77,7 +77,7 @@ end
 #Compute order
 order = log2(errors[:,1:4]./errors[:,2:5])
 
-#
+## Compute errors
 # using DataFrames
 # df = DataFrame(errors);
 # names!(df, map(Symbol,steps));
@@ -89,9 +89,9 @@ order = log2(errors[:,1:4]./errors[:,2:5])
 # println(dfo)
 
 N=400
-dx, dt, ntime, xx, uinit = setup_initial(N)
-uu = Engquist_Osher(uinit,dx,dt,N,ntime)
-uu2 =  Entropy_conservative(uinit,dx,dt,N,ntime, TVD_RK2)
+dx, xx, uinit = setup_initial(N)
+uu = Engquist_Osher(uinit,dx,CFL,N,Tend)
+uu2 =  Entropy_conservative(uinit,dx,CFL,N,Tend, TVD_RK2)
 #Plot
 using(Plots)
 plot(xx, uinit, lab="u0")

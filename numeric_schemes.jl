@@ -1,15 +1,17 @@
 @enum StepMethod FORWARD_EULER TVD_RK2
-function Engquist_Osher(uinit,dx,dt,N,ntime)
+function Engquist_Osher(uinit,dx,CFL,N,Tend)
   uu = copy(uinit)
   uleft = uu[1]; uright = uu[N]
   fplusleft = Flux(uleft); fminusright = Flux(uright)
   Kleft = K(uleft); Kright = K(uright)
   #Print progress
   percentage = 0
-  limit = ntime/5
+  limit = Tend/5
   println("Starting monotone scheme")
-  for t = 1:ntime
+  t = 0.0
+  while t <= Tend
     uold = copy(uu)
+    dt = cdt(uold, CFL, dx)
     #Compute fluxes
     fplus = zeros(N); fminus = zeros(N)
     for j = 1:N
@@ -34,26 +36,29 @@ function Engquist_Osher(uinit,dx,dt,N,ntime)
     # Print Progress
     if (t > limit)
       percentage = percentage + 20
-      limit = limit + ntime/5
+      limit = limit + Tend/5
       println(percentage, "% completed")
     end
+    t = t + dt
   end
   println("Completed...")
   return uu
 end
 
-function Entropy_conservative(uinit,dx,dt,N,ntime, tempSteps = FORWARD_EULER, ϵ = 0.0, Extra_Viscosity = false)
+function Entropy_conservative(uinit,dx,dt,N,Tend, tempSteps = FORWARD_EULER, ϵ = 0.0, Extra_Viscosity = false)
   uu = copy(uinit)
   uleft = uu[1]; uright = uu[N]
   Kleft = K(uleft); Kright = K(uright)
   #Print progress
   percentage = 0
-  limit = ntime/5
+  limit = Tend/5
   println("Starting entropy conservative scheme")
+  t = 0.0
   utemp = zeros(N)
   utemp2 = zeros(N)
-  for t = 1:ntime
+  while t <= Tend
     uold = copy(uu)
+    dt = cdt(uold, CFL, dx)
     if (tempSteps == FORWARD_EULER)
       update_uu_EC(uu, uold, N, dx, dt, uleft, uright, Kleft, Kright, ϵ, Extra_Viscosity)
     elseif (tempSteps == TVD_RK2)
@@ -66,9 +71,10 @@ function Entropy_conservative(uinit,dx,dt,N,ntime, tempSteps = FORWARD_EULER, ϵ
     # Print Progress
     if (t > limit)
       percentage = percentage + 20
-      limit = limit + ntime/5
+      limit = limit + Tend/5
       println(percentage, "% completed")
     end
+    t = t+dt
   end
   println("Completed...")
   return uu
@@ -94,18 +100,20 @@ function update_uu_EC(uu, uold, N, dx, dt, uleft, uright, Kleft, Kright, ϵ, Ext
   ϵ*dt/dx^2*(Extra_Viscosity ? uright-2*uold[j]+uold[j-1]:0.0)
 end
 
-function Entropy_nonconservative(uinit,dx,dt,N,ntime, tempSteps = FORWARD_EULER, ϵ = 0.0, Extra_Viscosity = false)
+function Entropy_nonconservative(uinit,dx,dt,N,Tend, tempSteps = FORWARD_EULER, ϵ = 0.0, Extra_Viscosity = false)
   uu = copy(uinit)
   uleft = uu[1]; uright = uu[N]
   Kleft = K(uleft); Kright = K(uright)
   #Print progress
   percentage = 0
-  limit = ntime/5
+  limit = Tend/5
   println("Starting entropy non-conservative scheme")
+  t = 0.0
   utemp = zeros(N)
   utemp2 = zeros(N)
-  for t = 1:ntime
+  while  t<= Tend
     uold = copy(uu)
+    dt = cdt(uold, CFL, dx)
     #update vector
     if (tempSteps == FORWARD_EULER)
       update_uu_NC(uu, uold, N, dx, dt, uleft, uright, ϵ, Extra_Viscosity)
@@ -119,9 +127,10 @@ function Entropy_nonconservative(uinit,dx,dt,N,ntime, tempSteps = FORWARD_EULER,
     # Print Progress
     if (t > limit)
       percentage = percentage + 20
-      limit = limit + ntime/5
+      limit = limit +Tend/5
       println(percentage, "% completed")
     end
+    t = t + dt
   end
   println("Completed...")
   return uu
