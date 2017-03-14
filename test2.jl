@@ -42,9 +42,9 @@ end
 
 function kvisc(ul, ur)
   if (abs(ul-0.5) < ϵ && abs(ur-0.5) < ϵ && (ul-0.5)*(ur-0.5) < 0)
-    0.0
+    return 0.0
   elseif (abs(ul-0.6) < ϵ && abs(ur-0.6) < ϵ && (ul-0.6)*(ur-0.6) < 0)
-    0.25/0.6
+    return 0.25/0.6
   end
   if (ul <= 0.5 && ur <= 0.5)
     0.0
@@ -91,10 +91,10 @@ end
 
 include("numeric_schemes.jl")
 #Save reference data
-N = M
-dx, xx, uinit = setup_initial(N)
-@time uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true)
-writedlm("test_2_reference.txt", [xx uu3], '\t')
+# N = M
+# dx, xx, uinit = setup_initial(N)
+# @time uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true)
+# writedlm("test_2_reference.txt", [xx uu3], '\t')
 
 reference = readdlm("test_2_reference.txt")
 steps = [200,400,800,1600,3200]
@@ -131,10 +131,11 @@ order = log2(errors[:,1:4]./errors[:,2:5])
 # println(df)
 # println(dfo)
 
-N=400
+N=1000
 dx, xx, uinit = setup_initial(N)
 uu = Engquist_Osher(uinit,dx,CFL,N,Tend)
 uu2 = Entropy_conservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true) #ESC-0.2
+uu4 = Entropy_nonconservative(uinit,dx,CFL,N,Tend,FORWARD_EULER)
 uu3 = Entropy_nonconservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true)
 #writedlm("test_2_400.txt", [xx uu uu2 uu3], '\t')
 #Plot
@@ -143,4 +144,5 @@ plot(xx, uinit, lab="u0")
 plot!(xx, uu, lab="MS")
 plot!(xx, uu2,lab="ESC-0.2")
 plot!(xx, uu3,lab="ESNC-0.2")
+plot!(xx, uu4,lab="ESNC")
 plot!(reference[:,1], reference[:,2], lab="REF")
