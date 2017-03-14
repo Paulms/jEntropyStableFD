@@ -123,6 +123,7 @@ dx, dt, ntime, xx, uinit = setup_initial(N)
 uu = Engquist_Osher(uinit,dx,dt,N,ntime)
 uu2 = Entropy_conservative(uinit,dx,dt,N,ntime,FORWARD_EULER,α*dx,true) #ESC-0.2
 uu3 = Entropy_nonconservative(uinit,dx,dt,N,ntime,FORWARD_EULER,α*dx,true)
+#writedlm("test_2_400.txt", [xx uu uu2 uu3], '\t')
 #Plot
 using(Plots)
 plot(xx, uinit, lab="u0")
