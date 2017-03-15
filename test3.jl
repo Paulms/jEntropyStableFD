@@ -19,8 +19,8 @@ cdt(u, CFL, dx) = CFL/(1/dx*maximum(abs(u))+1/dx^2*2*maximum(abs(u)))
 
 #Setup initial Conditions
 function setup_initial(N)
-  dx = (3/2*π)/(N-1)
-  xx = [i*dx-dx-π/2 for i in 1:N]
+  dx = (3/2*π)/N
+  xx = [i*dx+dx/2-π/2 for i in (0:N-1)]
   uinit = zeros(N)
   uinit = sin(xx)
   return dx,xx, uinit
@@ -74,4 +74,5 @@ using(Plots)
 plot(xx, uinit, lab="u0")
 plot!(xx, uu, lab="MS")
 plot!(xx, uu2,lab="ESC")
+plot!(xx, uu3,lab="ESC-0.3")
 plot!(reference[:,1], reference[:,2], lab="REF")

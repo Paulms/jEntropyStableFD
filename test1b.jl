@@ -27,8 +27,8 @@ end
 
 #Setup initial Conditions
 function setup_initial(N)
-  dx = 4.0/(N-1)
-  xx = [i*dx-dx-2 for i in 1:N]
+  dx = 4.0/N
+  xx = [i*dx+dx/2-2 for i in 0:(N-1)]
   uinit = zeros(N)
   for (i,x) in enumerate(xx)
     if (x >=-0.5 && x<=0.5)
@@ -40,10 +40,10 @@ end
 
 include("numeric_schemes.jl")
 ## Save reference data
-# N = M
-# dx, xx, uinit = setup_initial(N)
-# uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend)
-# writedlm("burger_2_reference.txt", [xx uu3], '\t')
+N = M
+dx, xx, uinit = setup_initial(N)
+uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend)
+writedlm("burger_2_reference.txt", [xx uu3], '\t')
 
 reference = readdlm("burger_2_reference.txt")
 steps = [200,400,800,1600,3200]
@@ -78,15 +78,15 @@ end
 order = log2(errors[:,1:4]./errors[:,2:5])
 
 ## Compute errors
-# using DataFrames
-# df = DataFrame(errors);
-# names!(df, map(Symbol,steps));
-# df[:method] = ["MS","ESC","ESNC","ESC2","ESNC2"];
-# dfo = DataFrame(order);
-# names!(dfo, map(Symbol,steps[2:5]));
-# dfo[:method] = ["MS","ESC","ESNC","ESC2","ESNC2"];
-# println(df)
-# println(dfo)
+using DataFrames
+df = DataFrame(errors);
+names!(df, map(Symbol,steps));
+df[:method] = ["MS","ESC","ESNC","ESC2","ESNC2"];
+dfo = DataFrame(order);
+names!(dfo, map(Symbol,steps[2:5]));
+dfo[:method] = ["MS","ESC","ESNC","ESC2","ESNC2"];
+println(df)
+println(dfo)
 
 N=400
 dx, xx, uinit = setup_initial(N)

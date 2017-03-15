@@ -26,8 +26,9 @@ end
 
 #Setup initial Conditions
 function setup_initial(N)
-  dx = 4.0/(N-1)
-  xx = [i*dx-dx-2 for i in 1:N]
+  # We use ghost cells
+  dx = 4.0/N
+  xx = [i*dx+dx/2-2 for i in 0:(N-1)]
   uinit = zeros(N)
   for (i,x) in enumerate(xx)
     if (x >=-1 && x<=1)
@@ -76,7 +77,7 @@ end
 #Compute order
 order = log2(errors[:,1:4]./errors[:,2:5])
 
-## Display Errors and Order:
+# Display Errors and Order:
 using DataFrames
 df = DataFrame(errors);
 names!(df, map(Symbol,steps));

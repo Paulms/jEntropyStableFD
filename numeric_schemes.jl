@@ -152,22 +152,11 @@ function update_uu_NC(uu, uold, N, dx, dt, uleft, uright, ϵ, Extra_Viscosity)
   ϵ*dt/dx^2*(Extra_Viscosity ? uright-2*uold[j]+uold[j-1]:0.0)
 end
 
-# function estimate_error(reference,M, uu,N)
-#   uexact = zeros(N)
-#   R = Int(round(M/N))
-#   for i = 1:N
-#       uexact[i] = 1.0/R*sum(reference[R*(i-1)+1:R*i])
-#   end
-#   sum(1.0/N*abs(uu - uexact))
-# end
-
-## Error with interpolation of cell values
-function estimate_error(reference, xx, uu, dx, N)
-  dxr = reference[2,1] - reference[1,1]
+function estimate_error(reference,M, uu,N)
   uexact = zeros(N)
+  R = Int(round(M/N))
   for i = 1:N
-    j = Int(floor((xx[i] - reference[1,1])/dxr))+1
-    uexact[i] = reference[j,2] + (xx[i] - reference[j,1])*(reference[j+1,2]-reference[j,2])/dxr
+      uexact[i] = 1.0/R*sum(reference[R*(i-1)+1:R*i])
   end
-  sum(dx*abs(uu - uexact))
+  sum(1.0/N*abs(uu - uexact))
 end

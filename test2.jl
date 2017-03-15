@@ -68,10 +68,10 @@ end
 
 #Setup initial Conditions
 function setup_initial(N)
-  dx = 2.0/(N-1)
+  dx = 2.0/N
   global ϵ
   ϵ = α*dx
-  xx = [i*dx-dx-1 for i in 1:N]
+  xx = [i*dx+dx/2-1 for i in 0:(N-1)]
   uinit = zeros(N)
   for (i,x) in enumerate(xx)
     if (x <=-0.5)
@@ -90,11 +90,11 @@ function setup_initial(N)
 end
 
 include("numeric_schemes.jl")
-#Save reference data
-# N = M
-# dx, xx, uinit = setup_initial(N)
-# @time uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true)
-# writedlm("test_2_reference.txt", [xx uu3], '\t')
+##Save reference data
+N = M
+dx, xx, uinit = setup_initial(N)
+@time uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true)
+writedlm("test_2_reference.txt", [xx uu3], '\t')
 
 reference = readdlm("test_2_reference.txt")
 steps = [200,400,800,1600,3200]
@@ -121,15 +121,15 @@ end
 order = log2(errors[:,1:4]./errors[:,2:5])
 
 ## Display Errors and Order:
-# using DataFrames
-# df = DataFrame(errors);
-# names!(df, map(Symbol,steps));
-# df[:method] = ["MS","ESC-0.2","ESNC-02"];
-# dfo = DataFrame(order);
-# names!(dfo, map(Symbol,steps[2:5]));
-# dfo[:method] = ["MS","ESC-0.2","ESNC-0.2"];
-# println(df)
-# println(dfo)
+using DataFrames
+df = DataFrame(errors);
+names!(df, map(Symbol,steps));
+df[:method] = ["MS","ESC-0.2","ESNC-02"];
+dfo = DataFrame(order);
+names!(dfo, map(Symbol,steps[2:5]));
+dfo[:method] = ["MS","ESC-0.2","ESNC-0.2"];
+println(df)
+println(dfo)
 
 N=1000
 dx, xx, uinit = setup_initial(N)
