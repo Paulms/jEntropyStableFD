@@ -94,7 +94,7 @@ uu = Engquist_Osher(uinit,dx,CFL,N,Tend)
 uu2 =  Entropy_conservative(uinit,dx,CFL,N,Tend, TVD_RK2)
 #Plot
 using(Plots)
-plot(xx, uinit, lab="u0")
+plot(xx, uinit, lab="u0",line=(:dot,2))
 plot!(xx, uu, lab="MS")
 plot!(xx, uu2,lab="ESCN2")
 plot!(reference[:,1], reference[:,2], lab="REF")

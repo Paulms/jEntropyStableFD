@@ -1,10 +1,6 @@
 @enum StepMethod FORWARD_EULER TVD_RK2
 function Engquist_Osher(uinit,dx,CFL,N,Tend)
   uu = copy(uinit)
-  uleft = uu[1]; uright = uu[N]
-  fplusleft = (uleft > 0) ? Flux(uleft) : 0.0
-  fminusright = (uright > 0) ? 0.0 : Flux(uright)
-  Kleft = K(uleft); Kright = K(uright)
   #Print progress
   percentage = 0
   limit = Tend/5
@@ -14,6 +10,11 @@ function Engquist_Osher(uinit,dx,CFL,N,Tend)
     uold = copy(uu)
     dt = cdt(uold, CFL, dx)
     #Compute fluxes
+    uleft = uold[1]; uright = uold[N]
+    fplusleft = (uleft > 0) ? Flux(uleft) : 0.0
+    fminusright = (uright > 0) ? 0.0 : Flux(uright)
+    Kleft = K(uleft); Kright = K(uright)
+    
     fplus = zeros(N); fminus = zeros(N)
     for j = 1:N
       if (uold[j] > 0.0)
