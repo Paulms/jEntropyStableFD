@@ -31,7 +31,7 @@ function setup_initial(N)
   xx = [i*dx+dx/2-2 for i in 0:(N-1)]
   uinit = zeros(N)
   for (i,x) in enumerate(xx)
-    if (x >=-1 && x<=1)
+    if (-1<x<1)
       uinit[i] = (1-x^2)^2
     end
   end
@@ -40,10 +40,10 @@ end
 
 include("numeric_schemes.jl")
 #Save reference data
-# N = M
-# dx, xx, uinit = setup_initial(N)
-# uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend)
-# writedlm("burger_1_reference.txt", [xx uu3], '\t')
+N = M
+dx, xx, uinit = setup_initial(N)
+uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend)
+writedlm("burger_1_reference.txt", [xx uu3], '\t')
 
 reference = readdlm("burger_1_reference.txt")
 steps = [200,400,800,1600,3200]
