@@ -40,12 +40,12 @@ end
 
 include("numeric_schemes.jl")
 ## Save reference data
-N = M
-dx, xx, uinit = setup_initial(N)
-uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend)
-writedlm("burger_2_reference.txt", [xx uu3], '\t')
+# N = M
+# dx, xx, uinit = setup_initial(N)
+# uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend)
+# writedlm("test_1b_reference.txt", [xx uu3], '\t')
 
-reference = readdlm("burger_2_reference.txt")
+reference = readdlm("test_1b_reference.txt")
 steps = [200,400,800,1600,3200]
 errors = zeros(5,5)
 for (i,step) in enumerate(steps)
@@ -91,10 +91,12 @@ println(dfo)
 N=400
 dx, xx, uinit = setup_initial(N)
 uu = Engquist_Osher(uinit,dx,CFL,N,Tend)
-uu2 =  Entropy_conservative(uinit,dx,CFL,N,Tend, TVD_RK2)
+uu2 = Entropy_conservative(uinit,dx,CFL,N,Tend) #ESC
+uu3 = Entropy_nonconservative(uinit,dx,CFL,N,Tend) #ESNC
 #Plot
 using(Plots)
 plot(xx, uinit, lab="u0")
 plot!(xx, uu, lab="MS")
-plot!(xx, uu2,lab="ESCN2")
+plot!(xx, uu2,lab="ESC")
+plot!(xx, uu3,lab="ESNC")
 plot!(reference[:,1], reference[:,2], lab="REF")

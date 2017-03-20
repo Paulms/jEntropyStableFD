@@ -14,7 +14,7 @@ function Engquist_Osher(uinit,dx,CFL,N,Tend)
     fplusleft = (uleft > 0) ? Flux(uleft) : 0.0
     fminusright = (uright > 0) ? 0.0 : Flux(uright)
     Kleft = K(uleft); Kright = K(uright)
-    
+
     fplus = zeros(N); fminus = zeros(N)
     for j = 1:N
       if (uold[j] > 0.0)
@@ -24,7 +24,6 @@ function Engquist_Osher(uinit,dx,CFL,N,Tend)
       end
     end
     KK = map(K, uold)
-    #update vector
     j = 1
     uu[j] = uold[j] - dt/dx * (fplus[j] + fminus[j+1] - fplusleft-fminus[j]) +
     dt/dx^2*(KK[j+1] - 2*KK[j] + Kleft)

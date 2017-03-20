@@ -28,11 +28,11 @@ end
 function setup_initial(N)
   # We use ghost cells
   dx = 4.0/N
-  xx = [i*dx+dx/2-2 for i in 0:(N-1)]
+  xx = [i*dx+dx/2-2.0 for i in 0:(N-1)]
   uinit = zeros(N)
   for (i,x) in enumerate(xx)
-    if (-1<x<1)
-      uinit[i] = (1-x^2)^2
+    if (-1.0<x<1.0)
+      uinit[i] = (1.0-x^2)^2
     end
   end
   return dx, xx, uinit
@@ -43,9 +43,9 @@ include("numeric_schemes.jl")
 N = M
 dx, xx, uinit = setup_initial(N)
 uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend)
-writedlm("burger_1_reference.txt", [xx uu3], '\t')
+writedlm("test_1_reference.txt", [xx uu3], '\t')
 
-reference = readdlm("burger_1_reference.txt")
+reference = readdlm("test_1_reference.txt")
 steps = [200,400,800,1600,3200]
 errors = zeros(5,5)
 for (i,step) in enumerate(steps)

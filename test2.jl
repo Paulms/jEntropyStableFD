@@ -91,10 +91,10 @@ end
 
 include("numeric_schemes.jl")
 ##Save reference data
-N = M
-dx, xx, uinit = setup_initial(N)
-@time uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true)
-writedlm("test_2_reference.txt", [xx uu3], '\t')
+# N = M
+# dx, xx, uinit = setup_initial(N)
+# @time uu3 = Entropy_conservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true)
+# writedlm("test_2_reference.txt", [xx uu3], '\t')
 
 reference = readdlm("test_2_reference.txt")
 steps = [200,400,800,1600,3200]
