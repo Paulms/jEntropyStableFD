@@ -137,7 +137,6 @@ end
 
 function update_uu_NC(uu, uold, N, dx, dt, ϵ, Extra_Viscosity)
   uleft = uold[1]; uright = uold[N]
-  Kleft = K(uleft); Kright = K(uright)
   j = 1
   uu[j] = uold[j] - dt/dx * (FluxN(uold[j], uold[j+1])-FluxN(uleft, uold[j])) +
   dt/dx^2*(kvisc(uold[j],uold[j+1])*(uold[j+1]-uold[j]) - kvisc(uleft,uold[j])*(uold[j]-uleft)) +
