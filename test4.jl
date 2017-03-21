@@ -18,7 +18,7 @@ function cdt(u, CFL, dx)
   end
   return CFL/(1/dx*maximum(sqrt(u[:,1].^2 + u[:,2].^2))+1/dx^2*2*maximum(uu))
 end
-kvisc(ul,ur) = μ*(sum(ul.^2 + ur.^2))/2.0*[1.0 0.0;1.0 0.0]
+kvisc(ul,ur) = μ*(sum(ul.^2 + ur.^2))/2.0*[1.0 0.0;0.0 1.0]
 
 #Setup initial Conditions
 function setup_initial(N)
@@ -82,17 +82,9 @@ include("numeric_schemes_nd.jl")
 # println(df)
 # println(dfo)
 
-N=100
+N=1000
 dx, xx, uinit = setup_initial(N)
 @time uu3 = Entropy_nonconservative_nd(uinit,dx,CFL,N,Tend) #ESNC
-
-N=500
-dx, xx, uinit = setup_initial(N)
-Profile.init(delay=0.001)
-Profile.clear()
-@profile uu3 = Entropy_nonconservative_nd(uinit,dx,CFL,N,Tend) #ESNC
-using ProfileView
-ProfileView.view()
 
 #Plot
 using(Plots)
