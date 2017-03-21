@@ -3,26 +3,26 @@
 
 # Parameters:
 const CFL = 0.9
-const Tend = 2.0
+const Tend = 1.0
 #const M = 8000       #Cells in reference solution
 const μ = 0.1
 
 #Functions:
 Flux(u) = u.^2/2
-kk(u) = μ*[norm(u)^2 0.0; 0.0 norm(u)^2]
+kk(u) = μ*[sum(u.^2) 0.0; 0.0 sum(u.^2)]
 FluxN(ul, ur) = (ur.^2 + ul.*ur + ul.^2)/6.0
 function cdt(u, CFL, dx)
   uu = zeros(size(u,1))
   for j = 1:size(u,1)
-    uu[j] = norm(kk(u[j,:]))
+    uu[j] = sqrt(sum(kk(u[j,:]).^2))
   end
   return CFL/(1/dx*maximum(sqrt(u[:,1].^2 + u[:,2].^2))+1/dx^2*2*maximum(uu))
 end
-kvisc(ul,ur) = μ*(norm(ul)^2 + norm(ur)^2)/2.0*eye(2)
+kvisc(ul,ur) = μ*(sum(ul.^2 + ur.^2))/2.0*[1.0 0.0;1.0 0.0]
 
 #Setup initial Conditions
 function setup_initial(N)
-  dx = 5/N
+  dx = 5.0/N
   # (-2.5, 2.5)
   xx = [i*dx+dx/2-2.5 for i in (0:N-1)]
   uinit = zeros(N, 2)
@@ -82,9 +82,18 @@ include("numeric_schemes_nd.jl")
 # println(df)
 # println(dfo)
 
-N=1000
+N=100
 dx, xx, uinit = setup_initial(N)
-uu3 = Entropy_nonconservative_nd(uinit,dx,CFL,N,Tend) #ESNC
+@time uu3 = Entropy_nonconservative_nd(uinit,dx,CFL,N,Tend) #ESNC
+
+N=500
+dx, xx, uinit = setup_initial(N)
+Profile.init(delay=0.001)
+Profile.clear()
+@profile uu3 = Entropy_nonconservative_nd(uinit,dx,CFL,N,Tend) #ESNC
+using ProfileView
+ProfileView.view()
+
 #Plot
 using(Plots)
 plot(xx, uinit[:,1], lab="u1o",line=(:dot,2))
