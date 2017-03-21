@@ -11,7 +11,13 @@ const μ = 0.1
 Flux(u) = u.^2/2
 kk(u) = μ*[norm(u)^2 0.0; 0.0 norm(u)^2]
 FluxN(ul, ur) = (ur.^2 + ul.*ur + ul.^2)/6.0
-cdt(u, CFL, dx) = CFL/(1/dx*maximum(norm(u))+1/dx^2*2*maximum(norm(kk(u))))
+function cdt(u, CFL, dx)
+  uu = zeros(size(u,1))
+  for j = 1:size(u,1)
+    uu[j] = norm(kk(u[j,:]))
+  end
+  return CFL/(1/dx*maximum(sqrt(u[:,1].^2 + u[:,2].^2))+1/dx^2*2*maximum(uu))
+end
 kvisc(ul,ur) = μ*(norm(ul)^2 + norm(ur)^2)/2.0*eye(2)
 
 #Setup initial Conditions
@@ -81,5 +87,7 @@ dx, xx, uinit = setup_initial(N)
 uu3 = Entropy_nonconservative_nd(uinit,dx,CFL,N,Tend) #ESNC
 #Plot
 using(Plots)
-plot(xx, uinit, lab="u0",line=(:dot,2))
-plot!(xx, uu3[:,1],lab="ESNC")
+plot(xx, uinit[:,1], lab="u1o",line=(:dot,2))
+plot!(xx, uu3[:,1],lab="ESNC u1")
+plot(xx, uinit[:,2], lab="u2o",line=(:dot,2))
+plot!(xx, uu3[:,2],lab="ESNC u2")
