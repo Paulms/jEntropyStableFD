@@ -18,7 +18,7 @@ function cdt(u, CFL, dx)
   end
   return CFL/(1/dx*maximum(sqrt(u[:,1].^2 + u[:,2].^2))+1/dx^2*2*maximum(uu))
 end
-kvisc(ul,ur) = μ*(sum(ul.^2 + ur.^2))/2.0*[1.0 0.0;0.0 1.0]
+kvisc(ul,ur) = μ*(sum(ul.^2 + ur.^2))/2.0*I#[1.0 0.0;0.0 1.0]
 
 #Setup initial Conditions
 function setup_initial(N)
