@@ -1,3 +1,4 @@
+using Interpolations
 @enum StepMethod FORWARD_EULER TVD_RK2
 @enum BoundaryCondition ZERO_FLUX PERIODIC
 function Engquist_Osher(uinit,dx,CFL,N,Tend, boundary = ZERO_FLUX)
@@ -179,5 +180,13 @@ function estimate_error(reference,M, uu,N)
   for i = 1:N
       uexact[i] = 1.0/R*sum(reference[R*(i-1)+1:R*i])
   end
+  sum(1.0/N*abs(uu - uexact))
+end
+
+function estimate_error_cubic(reference,M, xx,uu,N)
+  uexact = zeros(N)
+  itp = interpolate(reference[:,2], BSpline(Cubic(Flat())),OnCell())
+  i = (M-1)/(reference[M,1]-reference[1,1])*(xx - reference[1,1])+1
+  uexact = itp[i]
   sum(1.0/N*abs(uu - uexact))
 end

@@ -70,6 +70,7 @@ for (i,step) in enumerate(steps)
   errors[4,i] = error
   uu5 = Entropy_nonconservative(uinit,dx,CFL,N,Tend, TVD_RK2) #ESNC2
   error = estimate_error(reference[:,2], M, uu5, N)
+  #error2 = estimate_error_cubic(reference, M, xx,uu5, N)
   println("Error: ", error)
   errors[5,i] = error
 end
