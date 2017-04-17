@@ -33,14 +33,14 @@ function Engquist_Osher(uinit,dx,CFL,N,Tend, boundary = ZERO_FLUX)
     KK = map(K, uold)
     j = 1
     uu[j] = uold[j] - dt/dx * (fplus[j] + fminus[j+1] - flag*(fplusleft+fminus[j])) +
-    dt/dx^2*(KK[j+1] - 2*KK[j] + Kleft)
+    dt/dx^2*(KK[j+1] - KK[j] - flag*(KK[j] - Kleft))
     for j = 2:(N-1)
       uu[j] = uold[j] - dt/dx * (fplus[j] + fminus[j+1] - fplus[j-1]-fminus[j]) +
       dt/dx^2*(KK[j+1] - 2*KK[j] + KK[j-1])
     end
     j = N
     uu[j] = uold[j] - dt/dx * (flag*(fplus[j] + fminusright) - fplus[j-1]-fminus[j]) +
-    dt/dx^2*(Kright - 2*KK[j] + KK[j-1])
+    dt/dx^2*(flag*(Kright - KK[j])- KK[j] + KK[j-1])
     # Print Progress
     if (t > limit)
       percentage = percentage + 20
@@ -101,7 +101,7 @@ function update_uu_EC(uu, uold, N, dx, dt, ϵ, Extra_Viscosity, boundary)
   #update vector
   j = 1
   uu[j] = uold[j] - dt/dx * (FluxN(uold[j], uold[j+1])-flag*FluxN(uleft, uold[j])) +
-  dt/dx^2*(KK[j+1] - 2*KK[j] + Kleft) +
+  dt/dx^2*(KK[j+1] - KK[j] - flag*(KK[j] - Kleft)) +
   ϵ*dt/dx^2*(Extra_Viscosity ? uold[j+1]-2*uold[j]+uleft : 0.0)
 
   for j = 2:(N-1)
@@ -111,7 +111,7 @@ function update_uu_EC(uu, uold, N, dx, dt, ϵ, Extra_Viscosity, boundary)
   end
   j = N
   uu[j] = uold[j] - dt/dx * (flag*FluxN(uold[j], uright)-FluxN(uold[j-1], uold[j])) +
-  dt/dx^2*(Kright - 2*KK[j] + KK[j-1])+
+  dt/dx^2*(flag*(Kright - KK[j])-KK[j] + KK[j-1])+
   ϵ*dt/dx^2*(Extra_Viscosity ? uright-2*uold[j]+uold[j-1]:0.0)
 end
 
@@ -160,7 +160,7 @@ function update_uu_NC(uu, uold, N, dx, dt, ϵ, Extra_Viscosity, boundary)
   end
   j = 1
   uu[j] = uold[j] - dt/dx * (FluxN(uold[j], uold[j+1])-flag*FluxN(uleft, uold[j])) +
-  dt/dx^2*(kvisc(uold[j],uold[j+1])*(uold[j+1]-uold[j]) - kvisc(uleft,uold[j])*(uold[j]-uleft)) +
+  dt/dx^2*(kvisc(uold[j],uold[j+1])*(uold[j+1]-uold[j]) - flag*kvisc(uleft,uold[j])*(uold[j]-uleft)) +
   ϵ*dt/dx^2*(Extra_Viscosity ? uold[j+1]-2*uold[j]+uleft : 0.0)
   for j = 2:(N-1)
     uu[j] = uold[j] - dt/dx * (FluxN(uold[j], uold[j+1])-FluxN(uold[j-1], uold[j])) +
@@ -169,7 +169,7 @@ function update_uu_NC(uu, uold, N, dx, dt, ϵ, Extra_Viscosity, boundary)
   end
   j = N
   uu[j] = uold[j] - dt/dx * (flag*FluxN(uold[j], uright)-FluxN(uold[j-1], uold[j])) +
-  dt/dx^2*(kvisc(uold[j],uright)*(uright-uold[j]) - kvisc(uold[j-1],uold[j])*(uold[j]-uold[j-1]))+
+  dt/dx^2*(flag*kvisc(uold[j],uright)*(uright-uold[j]) - kvisc(uold[j-1],uold[j])*(uold[j]-uold[j-1]))+
   ϵ*dt/dx^2*(Extra_Viscosity ? uright-2*uold[j]+uold[j-1]:0.0)
 end
 
