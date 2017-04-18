@@ -92,15 +92,17 @@ reference = readdlm("test_1_reference.txt")
 
 N=400
 dx, xx, uinit = setup_initial(N)
-uu = Engquist_Osher(uinit,dx,CFL,N,Tend)
-uu2 =  Entropy_conservative(uinit,dx,CFL,N,Tend, TVD_RK2)
+@time uu = Engquist_Osher(uinit,dx,CFL,N,Tend)
+@time uu2 =  Entropy_conservative(uinit,dx,CFL,N,Tend, TVD_RK2)
 
 include("kt_scheme.jl")
-uu3 =  KT(uinit,dx,CFL,N,Tend)
+@time uu3 =  KT(uinit,dx,CFL/4,N,Tend, TVD_RK2)
+@time uu4 =  KT2(uinit,dx,CFL/4,N,Tend, TVD_RK2)
 #Plot
 using(Plots)
 plot(xx, uinit, lab="u0",line=(:dot,2))
 plot!(xx, uu, lab="MS")
 plot!(xx, uu3, lab="KT")
+plot!(xx, uu4, lab="KT2")
 plot!(xx, uu2,lab="ESCN2")
 plot!(reference[:,1], reference[:,2], lab="REF")

@@ -97,46 +97,48 @@ include("numeric_schemes.jl")
 # writedlm("test_2_reference.txt", [xx uu3], '\t')
 
 reference = readdlm("test_2_reference.txt")
-steps = [200,400,800,1600,3200]
-errors = zeros(3,5)
-for (i,step) in enumerate(steps)
-  println("Testing with ", step, " steps")
-  N = step
-  dx, xx, uinit = setup_initial(N)
-  uu = Engquist_Osher(uinit,dx,CFL,N,Tend)  #MS
-  error = estimate_error(reference[:,2], M, uu, N)
-  println("Error: ", error)
-  errors[1,i] = error
-  uu2 = Entropy_conservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true) #ESC-0.2
-  error = estimate_error(reference[:,2], M, uu2, N)
-  println("Error: ", error)
-  errors[2,i] = error
-  uu3 = Entropy_nonconservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true) #ESNC-0.2
-  error = estimate_error(reference[:,2], M, uu3, N)
-  println("Error: ", error)
-  errors[3,i] = error
-end
-
-#Compute order
-order = log2(errors[:,1:4]./errors[:,2:5])
-
-## Display Errors and Order:
-using DataFrames
-df = DataFrame(errors);
-names!(df, map(Symbol,steps));
-df[:method] = ["MS","ESC-0.2","ESNC-02"];
-dfo = DataFrame(order);
-names!(dfo, map(Symbol,steps[2:5]));
-dfo[:method] = ["MS","ESC-0.2","ESNC-0.2"];
-println(df)
-println(dfo)
+# steps = [200,400,800,1600,3200]
+# errors = zeros(3,5)
+# for (i,step) in enumerate(steps)
+#   println("Testing with ", step, " steps")
+#   N = step
+#   dx, xx, uinit = setup_initial(N)
+#   uu = Engquist_Osher(uinit,dx,CFL,N,Tend)  #MS
+#   error = estimate_error(reference[:,2], M, uu, N)
+#   println("Error: ", error)
+#   errors[1,i] = error
+#   uu2 = Entropy_conservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true) #ESC-0.2
+#   error = estimate_error(reference[:,2], M, uu2, N)
+#   println("Error: ", error)
+#   errors[2,i] = error
+#   uu3 = Entropy_nonconservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true) #ESNC-0.2
+#   error = estimate_error(reference[:,2], M, uu3, N)
+#   println("Error: ", error)
+#   errors[3,i] = error
+# end
+#
+# #Compute order
+# order = log2(errors[:,1:4]./errors[:,2:5])
+#
+# ## Display Errors and Order:
+# using DataFrames
+# df = DataFrame(errors);
+# names!(df, map(Symbol,steps));
+# df[:method] = ["MS","ESC-0.2","ESNC-02"];
+# dfo = DataFrame(order);
+# names!(dfo, map(Symbol,steps[2:5]));
+# dfo[:method] = ["MS","ESC-0.2","ESNC-0.2"];
+# println(df)
+# println(dfo)
 
 N=1000
 dx, xx, uinit = setup_initial(N)
-uu = Engquist_Osher(uinit,dx,CFL,N,Tend)
-uu2 = Entropy_conservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true) #ESC-0.2
-uu4 = Entropy_nonconservative(uinit,dx,CFL,N,Tend,FORWARD_EULER)
-uu3 = Entropy_nonconservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true)
+@time uu = Engquist_Osher(uinit,dx,CFL,N,Tend)
+@time uu2 = Entropy_conservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true) #ESC-0.2
+@time uu4 = Entropy_nonconservative(uinit,dx,CFL,N,Tend,FORWARD_EULER)
+@time uu3 = Entropy_nonconservative(uinit,dx,CFL,N,Tend,FORWARD_EULER,α*dx,true)
+include("kt_scheme.jl")
+@time uu5 =  KT(uinit,dx,CFL/4,N,Tend, TVD_RK2)
 #writedlm("test_2_400.txt", [xx uu uu2 uu3], '\t')
 #Plot
 using(Plots)
@@ -145,4 +147,5 @@ plot!(xx, uu, lab="MS")
 plot!(xx, uu2,lab="ESC-0.2")
 plot!(xx, uu3,lab="ESNC-0.2")
 plot!(xx, uu4,lab="ESNC")
+plot!(xx, uu5,lab="KT")
 plot!(reference[:,1], reference[:,2], lab="REF")

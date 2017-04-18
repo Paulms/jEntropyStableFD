@@ -1,5 +1,5 @@
 using Interpolations
-@enum StepMethod FORWARD_EULER TVD_RK2
+@enum StepMethod FORWARD_EULER TVD_RK2 RK4
 @enum BoundaryCondition ZERO_FLUX PERIODIC
 function Engquist_Osher(uinit,dx,CFL,N,Tend, boundary = ZERO_FLUX)
   uu = copy(uinit)

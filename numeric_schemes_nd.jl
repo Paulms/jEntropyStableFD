@@ -1,4 +1,4 @@
-@enum StepMethod FORWARD_EULER TVD_RK2
+@enum StepMethod FORWARD_EULER TVD_RK2 RK4
 @enum BoundaryCondition ZERO_FLUX PERIODIC
 function Entropy_nonconservative_nd(uinit,dx,dt,N,Tend, tempSteps = FORWARD_EULER,
   ϵ = 0.0, Extra_Viscosity = false, boundary = ZERO_FLUX)
