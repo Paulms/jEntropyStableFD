@@ -203,7 +203,8 @@ function update_KT2(rhs, uold, N, dx, dt,Θ, boundary)
   hh = 0.5*(Flux.(Φ_r)+Flux.(Φ_l))-0.5*(uold[2:N]-uold[1:N-1]).*aa+
   aa.*(1-λ*aa)/4.*(∇u[2:N]+∇u[1:N-1]) + λ*dx/2*(aa).^2.*∇Ψ
   ∇u_ap = (uold[2:N]-uold[1:N-1])/dx
-  pp = 0.5*(KK[1:N-1].*∇u_ap + KK[2:N].*∇u_ap)
+  #pp = 0.5*(KK[1:N-1].*∇u_ap + KK[2:N].*∇u_ap)
+  pp = 0.5*(KK[1:N-1] + KK[2:N]).*∇u_ap
   j = 1
   rhs[j] = - 1/dx * (hh[j] - pp[j])
   for j = 2:(N-1)

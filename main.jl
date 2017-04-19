@@ -98,6 +98,14 @@ dx, xx, uinit = setup_initial(N)
 include("kt_scheme.jl")
 @time uu3 =  KT(uinit,dx,CFL/4,N,Tend, TVD_RK2)
 @time uu4 =  KT2(uinit,dx,CFL/4,N,Tend, TVD_RK2)
+
+#Profile
+Profile.init(delay=0.005)
+Profile.clear()
+@profile uu3 =  KT(uinit,dx,CFL/4,N,Tend, TVD_RK2)
+using ProfileView
+ProfileView.view()
+
 #Plot
 using(Plots)
 plot(xx, uinit, lab="u0",line=(:dot,2))
