@@ -16,7 +16,7 @@ K(u) = μ*u^2
 kk(u) = 2*μ*u
 Flux(u) = u^2/2
 FluxN(ul, ur) = (ur^2 + ul*ur + ul^2)/6.0
-cdt(u, CFL, dx) = CFL/(1/dx*maximum(abs(u))+1/dx^2*2*maximum(abs(2*μ*u)))
+  cdt(u, CFL, dx) = CFL/(1/dx*maximum(abs(u))+1/dx^2*2*maximum(abs(2*μ*u)))
 function kvisc(ul, ur)
   if (abs(ul)< eps() && abs(ur) <eps())
     0.0

@@ -193,7 +193,7 @@ function update_KT2(rhs, uold, N, dx, dt,Θ, boundary)
   # Discrete derivatives
   ∇Ψ = zeros(N-1)
   for i = 2:(N-2)
-    ∇Ψ=2\dx*minmod(Θ*(Φ_r[i]-Ψ[i])/(1+λ*(aa[i]-aa[i-1])),
+    ∇Ψ[i]=2\dx*minmod(Θ*(Φ_r[i]-Ψ[i])/(1+λ*(aa[i]-aa[i-1])),
     (Ψ[i+1]-Ψ[i])/(2+λ*(2*aa[i]-aa[i-1]-aa[i+1])),
     Θ*(Ψ[i+1]-Φ_r[i])/(1+λ*(aa[i]-aa[i+1])))
   end
