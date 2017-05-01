@@ -8,8 +8,9 @@ function Entropy_nonconservative_nd(uinit,dx,dt,N,Tend, tempSteps = FORWARD_EULE
   limit = Tend/5
   println("Starting entropy non-conservative scheme")
   t = 0.0
-  utemp = zeros(N)
-  utemp2 = zeros(N)
+  M = size(uinit,2)
+  utemp = zeros(N,M)
+  utemp2 = zeros(N,M)
   while  t<= Tend
     uold = copy(uu)
     dt = cdt(uold, CFL, dx)
@@ -22,6 +23,8 @@ function Entropy_nonconservative_nd(uinit,dx,dt,N,Tend, tempSteps = FORWARD_EULE
       #Second Step
       update_uu_NCd(utemp2, utemp, N, dx, dt, ϵ, Extra_Viscosity, boundary)
       uu = 0.5*(uold + utemp2)
+      #println("uu",uu)
+      #throw("end")
     end
     # Print Progress
     if (t > limit)
@@ -35,7 +38,7 @@ function Entropy_nonconservative_nd(uinit,dx,dt,N,Tend, tempSteps = FORWARD_EULE
   return uu
 end
 
-function update_uu_NCd(uu, uold, N, dx, dt, ϵ, Extra_Viscosity)
+function update_uu_NCd(uu, uold, N, dx, dt, ϵ, Extra_Viscosity, boundary)
   if (boundary == ZERO_FLUX)
     uleft = uold[1,:]; uright = uold[N,:]
     flag = 0.0

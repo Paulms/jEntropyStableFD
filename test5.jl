@@ -79,7 +79,7 @@ include("numeric_schemes_nd.jl")
 
 N=500
 dx, xx, uinit = setup_initial(N)
-@time uu3 = Entropy_nonconservative_nd(uinit,dx,CFL,N,Tend) #ESNC
+@time uu3 = Entropy_nonconservative_nd(uinit,dx,CFL,N,Tend, TVD_RK2) #ESNC
 
 #Plot
 using(Plots)
